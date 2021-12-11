@@ -1,9 +1,14 @@
-var http = require("http");
+const express = require("express");
 
-//create a server object:
-http
-  .createServer(function(req, res) {
-    res.write("Hello World!"); //write a response to the client
-    res.end(); //end the response
-  })
-  .listen(8080); //the server object listens on port 8080
+// Initialize Express
+const app = express();
+
+// Create GET request
+app.get("/", (req, res) => {
+  res.send("Express on Vercel");
+});
+
+// Initialize server
+app.listen(5000, () => {
+  console.log("Running on port 5000.");
+});

@@ -1,12 +1,15 @@
 {
-  "name": "node-http-server",
+  "name": "bs-card-price-compare",
   "version": "1.0.0",
-  "description": "Node.js example server starter project",
+  "description": "bs 卡價比對",
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon src/index.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "4.17.1",
+    "nodemon": "2.0.15"
+  },
   "devDependencies": {
     "nodemon": "1.18.4"
   },
