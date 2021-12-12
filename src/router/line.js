@@ -1,3 +1,6 @@
+// Use dotenv to read .env vars into Node
+require('dotenv').config();
+
 const line = require('@line/bot-sdk');
 const express = require('express');
 const lineRouter = express.Router();
@@ -6,9 +9,6 @@ const {handleEvent} = require('../service/line');
 
 const channelAccessToken = process.env.LineChannelAccessToken;
 const channelSecret = process.env.LineChannelSecret;
-
-
-lineRouter.get('/', (req, res) => res.end(`I'm listening. Please access with POST.`));
 
 lineRouter.post('/', errorWrapper(async (req, res) => {
 
@@ -52,6 +52,8 @@ lineRouter.post('/', errorWrapper(async (req, res) => {
             }
         ]
     }
+
+    // Promise.all(req.body.events.map(handleEvent)).then((result) => res.json(result));
 
     // 參考文件 : https://developers.line.biz/en/reference/messaging-api/#webhook-event-objects
     const events = req.body.events;

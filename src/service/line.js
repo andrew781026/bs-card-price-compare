@@ -1,3 +1,6 @@
+// Use dotenv to read .env vars into Node
+require('dotenv').config();
+
 const line = require('@line/bot-sdk');
 
 const channelAccessToken = process.env.LineChannelAccessToken;
@@ -17,12 +20,12 @@ async function msgHandler(event) {
 // event handler
 async function handleEvent(event) {
 
+    console.log(`User ID: ${event.source.userId}`); // 要將 userId 所有的對話做儲存 , 才能做上下文分析
+    console.log('[line-webhook-req] event=', event); // log the event msg
+
     if (event.replyToken && event.replyToken.match(/^(.)\1*$/)) {
         return console.log('Test hook recieved: ' + JSON.stringify(event.message));
     }
-
-    console.log(`User ID: ${event.source.userId}`); // 要將 userId 所有的對話做儲存 , 才能做上下文分析
-    console.log('[line-webhook-req] event=', event); // log the event msg
 
     if (event.type !== 'message' || event.message.type !== 'text') return null;
     else return await msgHandler(event)

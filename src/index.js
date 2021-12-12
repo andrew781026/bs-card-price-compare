@@ -1,7 +1,10 @@
 const express = require("express");
+const {initLineService} = require("./router/line");
 
 // Initialize Express
 const app = express();
+
+initLineService({app})
 
 // Create GET request
 app.get("/", (req, res) => {

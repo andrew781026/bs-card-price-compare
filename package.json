@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "description": "bs 卡價比對",
   "main": "src/index.js",
+  "license": "MIT",
   "scripts": {
-    "ngrok": "nodemon ./ngrok.js",
-    "start": "nodemon src/index.js"
+    "ngrok": "node ./ngrok.js",
+    "start": "node src/index.js"
   },
   "dependencies": {
-    "@line/bot-sdk": "^7.4.0",
+    "@line/bot-sdk": "^6.8.4",
     "express": "4.17.1"
   },
   "devDependencies": {
-    "nodemon": "^1.18.4",
-    "ngrok": "^4.2.2"
+    "dotenv": "^10.0.0",
+    "ngrok": "^4.2.2",
+    "nodemon": "^1.18.4"
   },
   "keywords": []
 }
