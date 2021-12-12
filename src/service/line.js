@@ -19,10 +19,16 @@ async function msgHandler(event) {
         .then(console.log)
         .catch(console.error);
 
-    return client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: 'https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=sd58'
-    });
+    return client.replyMessage(event.replyToken, [
+        {
+            type: 'text',
+            text: 'https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=sd58'
+        },
+        {
+            type: 'text',
+            text: 'https://fullahead-tcg.com/shop/shopbrand.html'
+        }
+    ]);
 }
 
 // event handler
