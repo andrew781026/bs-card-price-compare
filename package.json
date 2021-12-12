@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
+    "body-parser": "^1.19.1",
     "express": "4.17.1",
-    "firebase-admin": "^10.0.0"
+    "firebase-admin": "^10.0.0",
+    "serverless-http": "^2.7.0"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
