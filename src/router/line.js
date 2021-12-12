@@ -10,6 +10,9 @@ const {handleEvent} = require('../service/line');
 const channelAccessToken = process.env.LineChannelAccessToken;
 const channelSecret = process.env.LineChannelSecret;
 
+// get for line platform verify using
+lineRouter.get('/', (req, res) => res.end(`I'm listening. Please access with POST.`));
+
 lineRouter.post('/', errorWrapper(async (req, res) => {
 
     // line webhook 的 req.body 為下述結構

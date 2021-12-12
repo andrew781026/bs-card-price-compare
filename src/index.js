@@ -8,9 +8,11 @@ const bodyParser = require('body-parser');
 // Initialize Express
 const app = express();
 
-app.use(bodyParser.json());
 
 initLineService({app})
+
+// bodyParser 會影響 @line/bot-sdk 運作
+app.use(bodyParser.json());
 
 // Create GET request
 app.get("/", (req, res) => {
