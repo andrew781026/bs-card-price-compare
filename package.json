@@ -2,9 +2,10 @@
   "name": "bs-card-price-compare",
   "version": "1.0.0",
   "description": "bs 卡價比對",
-  "main": "src/index.js",
+  "main": "functions/index.js",
   "license": "MIT",
   "scripts": {
+    "build": "netlify-lambda build src",
     "ngrok": "node ./ngrok.js",
     "start": "node src/index.js"
   },
