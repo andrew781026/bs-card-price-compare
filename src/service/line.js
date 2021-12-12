@@ -13,7 +13,7 @@ async function msgHandler(event) {
 
     return client.replyMessage(event.replyToken, {
         type: 'text',
-        text: '沒有收到任何資訊，請再次輸入~'
+        text: 'https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=sd58'
     });
 }
 
