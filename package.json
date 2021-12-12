@@ -4,14 +4,16 @@
   "description": "bs 卡價比對",
   "main": "src/index.js",
   "scripts": {
+    "ngrok": "nodemon ./ngrok.js",
     "start": "nodemon src/index.js"
   },
   "dependencies": {
-    "express": "4.17.1",
-    "nodemon": "2.0.15"
+    "@line/bot-sdk": "^7.4.0",
+    "express": "4.17.1"
   },
   "devDependencies": {
-    "nodemon": "1.18.4"
+    "nodemon": "^1.18.4",
+    "ngrok": "^4.2.2"
   },
   "keywords": []
 }

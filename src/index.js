@@ -12,3 +12,5 @@ app.get("/", (req, res) => {
 app.listen(5000, () => {
   console.log("Running on port 5000.");
 });
+
+// line-bot 的最小範例 : https://line.github.io/line-bot-sdk-nodejs/getting-started/basic-usage.html#synopsis
