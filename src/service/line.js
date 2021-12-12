@@ -9,7 +9,15 @@ const channelSecret = process.env.LineChannelSecret;
 // create LINE SDK client
 const client = new line.Client({channelAccessToken, channelSecret});
 
+const {db} = require('../firebase/init')
+
 async function msgHandler(event) {
+
+    const docRef = db.collection('events').doc(`${event.source.userId}-${event.timestamp}`);
+
+    docRef.set(event)
+        .then(console.log)
+        .catch(console.error);
 
     return client.replyMessage(event.replyToken, {
         type: 'text',
