@@ -105,14 +105,6 @@ async function msgHandler(event) {
     const message = getMulti(cardInfo);
 
     return client.replyMessage(event.replyToken, [
-        {
-            type: 'text',
-            text: 'https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=sd58'
-        },
-        {
-            type: 'text',
-            text: 'https://fullahead-tcg.com/shop/shopbrand.html'
-        },
         message
     ]);
 }
