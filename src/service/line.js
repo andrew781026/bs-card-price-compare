@@ -20,7 +20,7 @@ async function msgHandler(event) {
         .then(console.log)
         .catch(console.error);
 
-    const cardInfo = await getCardInfo('sd58');
+    const cardInfo = await getCardInfo(event.message.text);
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = card => {
