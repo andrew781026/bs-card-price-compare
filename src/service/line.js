@@ -35,22 +35,20 @@ async function msgHandler(event) {
             else return [...new Set(snapshot.docs.map(doc => doc.data()).map(({searchText}) => searchText))];
         }
 
-        getLast10Search({userId})
-            .then(searchTexts => {
+        const searchTexts = await getLast10Search({userId});
 
-                return client.replyMessage(event.replyToken,
-                    {
-                        type: 'text',
-                        text: '歷史查詢',
-                        quickReply: {
-                            items: searchTexts.map(text => ({
-                                "type": "action",
-                                "action": {type: 'message', label: text, text}
-                            }))
-                        },
-                    }
-                );
-            })
+        return client.replyMessage(event.replyToken,
+            {
+                type: 'text',
+                text: '歷史查詢',
+                quickReply: {
+                    items: searchTexts.map(text => ({
+                        "type": "action",
+                        "action": {type: 'message', label: text, text}
+                    }))
+                },
+            }
+        );
     }
 
     // 紀錄查詢過的文字
