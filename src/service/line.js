@@ -36,12 +36,20 @@ async function msgHandler(event) {
                 quickReply: {
                     items: [
                         {
-                            type: 'text',
-                            text: 'sd58',
+                            "type": "action",
+                            "action": {
+                                type: 'message',
+                                label: 'sd58',
+                                text: 'sd58'
+                            }
                         },
                         {
-                            type: 'text',
-                            text: 'bs58',
+                            "type": "action",
+                            "action": {
+                                type: 'message',
+                                label: 'bs58',
+                                text: 'bs58'
+                            }
                         },
                     ]
                 },
