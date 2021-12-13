@@ -65,7 +65,7 @@ async function msgHandler(event) {
 
     const searchText = event.message.text;
     const cardInfo = await getCardInfo(searchText);
-    saveSearchText({userId, searchText})
+    if (cardInfo && cardInfo.length > 0) saveSearchText({userId, searchText})
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = card => {
