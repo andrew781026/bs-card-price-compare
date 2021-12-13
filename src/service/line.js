@@ -10,6 +10,7 @@ const channelSecret = process.env.LineChannelSecret;
 const client = new line.Client({channelAccessToken, channelSecret});
 
 const {db} = require('../firebase/init')
+const {getCardInfo} = require('../service/cheerio')
 
 async function msgHandler(event) {
 
@@ -19,6 +20,87 @@ async function msgHandler(event) {
         .then(console.log)
         .catch(console.error);
 
+    const cardInfo = await getCardInfo('sd58')
+
+    // flex 模擬器 : https://developers.line.biz/flex-simulator/
+    const getSingleCard = card => {
+
+        return {
+            "type": "bubble",
+            "size": "micro",
+            "header": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": card.cardId,
+                        "size": "xl"
+                    },
+                    {
+                        "type": "text",
+                        "text": card.cardName,
+                    }
+                ]
+            },
+            "hero": {
+                "type": "image",
+                "url": card.cardImage,
+                "size": "full",
+                "aspectRatio": "13:17",
+                "aspectMode": "fit",
+                "action": {
+                    "type": "uri",
+                    "uri": card.cardBuyLink
+                }
+            },
+            "body": {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": card.cardPrice
+                    },
+                    {
+                        "type": "text",
+                        "text": card.cardStock,
+                        "align": "end"
+                    }
+                ]
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "button",
+                        "style": "link",
+                        "height": "sm",
+                        "action": {
+                            "type": "uri",
+                            "label": "立即購買",
+                            "uri": card.cardBuyLink
+                        }
+                    }
+                ],
+                "flex": 0
+            }
+        }
+    }
+
+    const getMulti = cardInfo => {
+
+        return {
+            "type": "carousel",
+            "altText": "查出的卡片資訊",
+            "contents": cardInfo.map(card => getSingleCard(card))
+        }
+    }
+
+    const message = getMulti(cardInfo);
+
     return client.replyMessage(event.replyToken, [
         {
             type: 'text',
@@ -27,7 +109,8 @@ async function msgHandler(event) {
         {
             type: 'text',
             text: 'https://fullahead-tcg.com/shop/shopbrand.html'
-        }
+        },
+        message
     ]);
 }
 
