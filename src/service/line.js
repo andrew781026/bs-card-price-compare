@@ -20,7 +20,7 @@ async function msgHandler(event) {
         .then(console.log)
         .catch(console.error);
 
-    const cardInfo = await getCardInfo('sd58')
+    const cardInfo = await getCardInfo('sd58');
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = card => {
@@ -93,9 +93,12 @@ async function msgHandler(event) {
     const getMulti = cardInfo => {
 
         return {
-            "type": "carousel",
+            "type": "flex",
             "altText": "查出的卡片資訊",
-            "contents": cardInfo.map(card => getSingleCard(card))
+            "contents": {
+                "type": "carousel",
+                "contents": cardInfo.slice(0, 10).map(card => getSingleCard(card))
+            }
         }
     }
 
