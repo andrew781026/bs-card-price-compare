@@ -2,6 +2,7 @@
 
 const axios = require('axios');
 const cheerio = require('cheerio');
+const queryString = require('query-string');
 
 // Using async/await
 async function getCardInfo(name) {
@@ -32,8 +33,14 @@ async function getCardInfo(name) {
             const cardName = $card.find('p.name').text().replace(/[\n\t]/ig, '').trim();
             const cardPrice = $card.find('p.price').text().replace(/[\n\t]/ig, '').trim();
             const cardStock = $card.find('p.stock').text().replace(/[\n\t]/ig, '').trim();
-            const cardImage = $card.find('p.image img').attr('src');
+
             const cardBuyLink = 'https://yuyu-tei.jp' + $card.find('.image_box > a').attr('href');
+
+            // https://img.yuyu-tei.jp/card_image/bs/90_126/sd58/10011.jpg -> 小圖
+            // https://img.yuyu-tei.jp/card_image/bs/front/sd58/10011.jpg -> 大圖
+
+            const parsed = queryString.parse(cardBuyLink);
+            const cardImage = `https://img.yuyu-tei.jp/card_image/bs/front/${parsed.VER}/${parsed.CID}.jpg`;
 
             return {cardId, cardName, cardPrice, cardStock, cardImage, cardBuyLink};
 
