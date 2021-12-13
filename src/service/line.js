@@ -20,7 +20,50 @@ async function msgHandler(event) {
         .then(console.log)
         .catch(console.error);
 
-    const cardInfo = await getCardInfo(event.message.text);
+    // event.source.userId - 建立同一個人 , 以前查過的一些列表 => 用 "歷史" 來叫出來
+    if (event.message.text === '歷史') {
+
+        const getLast10Search = async ({userId}) => {
+
+            const historyRef = db.collection('search').doc(userId).collection('text');
+            const last10Search = await historyRef.orderBy('createAt', 'desc').limit(10).get();
+        }
+
+        return client.replyMessage(event.replyToken, [
+            {
+                type: 'text',
+                text: '歷史查詢的快速回複',
+                quickReply: {
+                    items: [
+                        {
+                            type: 'text',
+                            text: 'sd58',
+                        },
+                        {
+                            type: 'text',
+                            text: 'bs58',
+                        },
+                    ]
+                },
+            }
+        ]);
+    }
+
+    // 紀錄查詢過的文字
+    const saveSearchText = ({userId, searchText}) => {
+
+        const searchRef = db.collection('search');
+
+        searchRef
+            .doc(userId).collection('text')
+            .add({userId, searchText, createAt: new Date()})
+            .then(console.log)
+            .catch(console.error);
+    }
+
+    const searchText = event.message.text;
+    const cardInfo = await getCardInfo(searchText);
+    saveSearchText({userId: event.source.userId, searchText})
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = card => {
