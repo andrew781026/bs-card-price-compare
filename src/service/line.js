@@ -14,7 +14,8 @@ const {getCardInfo} = require('../service/cheerio')
 
 async function msgHandler(event) {
 
-    const docRef = db.collection('events').doc(`${event.source.userId}-${event.timestamp}`);
+    const userId = event.source.userId;
+    const docRef = db.collection('events').doc(`${userId}-${event.timestamp}`);
 
     docRef.set(event)
         .then(console.log)
@@ -26,35 +27,30 @@ async function msgHandler(event) {
         const getLast10Search = async ({userId}) => {
 
             const historyRef = db.collection('search').doc(userId).collection('text');
-            const last10Search = await historyRef.orderBy('createAt', 'desc').limit(10).get();
+            const snapshot = await historyRef.orderBy('createAt', 'desc').limit(10).get();
+
+            if (snapshot.empty) return []
+
+            // 參考資料 : https://firebase.google.com/docs/firestore/query-data/get-data
+            else return [...new Set(snapshot.docs.map(doc => doc.data()).map(({searchText}) => searchText))];
         }
 
-        return client.replyMessage(event.replyToken,
-            {
-                type: 'text',
-                text: '歷史查詢的快速回複',
-                quickReply: {
-                    items: [
-                        {
-                            "type": "action",
-                            "action": {
-                                type: 'message',
-                                label: 'sd58',
-                                text: 'sd58'
-                            }
+        getLast10Search({userId})
+            .then(searchTexts => {
+
+                return client.replyMessage(event.replyToken,
+                    {
+                        type: 'text',
+                        text: '歷史查詢',
+                        quickReply: {
+                            items: searchTexts.map(text => ({
+                                "type": "action",
+                                "action": {type: 'message', label: text, text}
+                            }))
                         },
-                        {
-                            "type": "action",
-                            "action": {
-                                type: 'message',
-                                label: 'bs58',
-                                text: 'bs58'
-                            }
-                        },
-                    ]
-                },
-            }
-        );
+                    }
+                );
+            })
     }
 
     // 紀錄查詢過的文字
@@ -71,7 +67,7 @@ async function msgHandler(event) {
 
     const searchText = event.message.text;
     const cardInfo = await getCardInfo(searchText);
-    saveSearchText({userId: event.source.userId, searchText})
+    saveSearchText({userId, searchText})
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = card => {
