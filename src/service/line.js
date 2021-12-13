@@ -29,7 +29,7 @@ async function msgHandler(event) {
             const last10Search = await historyRef.orderBy('createAt', 'desc').limit(10).get();
         }
 
-        return client.replyMessage(event.replyToken, [
+        return client.replyMessage(event.replyToken,
             {
                 type: 'text',
                 text: '歷史查詢的快速回複',
@@ -46,7 +46,7 @@ async function msgHandler(event) {
                     ]
                 },
             }
-        ]);
+        );
     }
 
     // 紀錄查詢過的文字
