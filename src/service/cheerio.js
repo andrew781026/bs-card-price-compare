@@ -39,7 +39,7 @@ async function getCardInfo(name) {
             // https://img.yuyu-tei.jp/card_image/bs/90_126/sd58/10011.jpg -> 小圖
             // https://img.yuyu-tei.jp/card_image/bs/front/sd58/10011.jpg -> 大圖
 
-            const parsed = queryString.parse(cardBuyLink);
+            const parsed = queryString.parse(cardBuyLink.split('?')[1]);
             const cardImage = `https://img.yuyu-tei.jp/card_image/bs/front/${parsed.VER}/${parsed.CID}.jpg`;
 
             return {cardId, cardName, cardPrice, cardStock, cardImage, cardBuyLink};
