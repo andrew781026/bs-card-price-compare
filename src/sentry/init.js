@@ -14,7 +14,7 @@ const initSentry = ({app}) => {
     });
 
     // The error handler must be before any other error middleware and after all controllers
-    app.use(Sentry.Handlers.errorHandler());
+    // app.use(Sentry.Handlers.errorHandler());
 
     app.get("/debug-sentry", function mainHandler(req, res) {
         throw new Error("My first Sentry error!");
