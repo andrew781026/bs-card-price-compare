@@ -1,5 +1,6 @@
 const express = require("express");
 const {initLineService} = require("./router/line");
+const {initSentry} = require("./sentry/init");
 
 const serverless = require('serverless-http');
 const bodyParser = require('body-parser');
@@ -7,7 +8,8 @@ const bodyParser = require('body-parser');
 // Initialize Express
 const app = express();
 
-initLineService({app})
+initLineService({app});
+initSentry({app});
 
 // bodyParser 會影響 @line/bot-sdk 運作
 app.use(bodyParser.json());
