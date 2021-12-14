@@ -42,6 +42,10 @@ const initSentry = ({app}) => {
 
     // Optional fallthrough error handler
     app.use(function onError(err, req, res, next) {
+
+        // send the error message to Sentry
+        Sentry.captureException(err);
+
         // The error id is attached to `res.sentry` to be returned
         // and optionally displayed to the user for support.
         res.statusCode = 500;
