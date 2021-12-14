@@ -32,7 +32,14 @@ async function msgHandler(event) {
             if (snapshot.empty) return []
 
             // 參考資料 : https://firebase.google.com/docs/firestore/query-data/get-data
-            else return [...new Set(snapshot.docs.map(doc => doc.data()).map(({searchText}) => searchText))];
+            else {
+
+                const arr = snapshot.docs.map(doc => doc.data());
+                const trimArr = arr.map(({searchText}) => searchText && searchText.trim());
+
+                // distinct text
+                return [...new Set(trimArr)];
+            }
         }
 
         const searchTexts = await getLast10Search({userId});
