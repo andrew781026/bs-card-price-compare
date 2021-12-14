@@ -8,6 +8,7 @@ const Sentry_dsn = process.env.Sentry_dsn;
 const initSentry = ({app}) => {
 
     Sentry.init({
+        debug: true,
         // dsn 從右側連結取得 : https://sentry.io/settings/ezoom/projects/bs-card-price-compare/keys/
         dsn: Sentry_dsn,
     });
