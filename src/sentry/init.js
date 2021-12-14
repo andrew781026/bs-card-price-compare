@@ -9,6 +9,7 @@ const Sentry_dsn = process.env.Sentry_dsn;
 const initSentry = ({app}) => {
 
     Sentry.init({
+        debug: true,
         // dsn 從右側連結取得 : https://sentry.io/settings/ezoom/projects/bs-card-price-compare/keys/
         dsn: Sentry_dsn,
         integrations: [
@@ -23,6 +24,8 @@ const initSentry = ({app}) => {
         // We recommend adjusting this value in production
         tracesSampleRate: 1.0,
     });
+
+    Sentry.captureException(new Error('test exception'));
 
     // RequestHandler creates a separate execution context using domains, so that every
     // transaction/span/breadcrumb is attached to its own Hub instance
