@@ -6,7 +6,7 @@ const queryString = require('query-string');
 
 // Using async/await
 async function getCardInfo(name) {
-    try {
+
         const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=${name}`);
 
         const htmlStr = response.data;
@@ -48,9 +48,7 @@ async function getCardInfo(name) {
 
         return cardInfos;
 
-    } catch (error) {
-        console.error(error);
-    }
+
 }
 
 module.exports = {getCardInfo}

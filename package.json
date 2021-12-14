@@ -19,6 +19,8 @@
     "serverless-http": "^2.7.0"
   },
   "devDependencies": {
+    "@sentry/node": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
     "dotenv": "^10.0.0",
     "ngrok": "^4.2.2",
     "nodemon": "^1.18.4"
