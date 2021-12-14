@@ -25,7 +25,7 @@ const initSentry = ({app}) => {
         tracesSampleRate: 1.0,
     });
 
-    Sentry.captureException(new Error('test exception'));
+    // Sentry.captureException(new Error('test exception'));
 
     // RequestHandler creates a separate execution context using domains, so that every
     // transaction/span/breadcrumb is attached to its own Hub instance
