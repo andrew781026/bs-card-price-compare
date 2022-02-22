@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 const queryString = require('query-string');
 
 // Using async/await
-async function getCardInfo(name) {
+export const getCardInfo = async (name) => {
 
     const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=${name}`);
 
@@ -51,7 +51,4 @@ async function getCardInfo(name) {
     return cardInfos;
 }
 
-module.exports = {getCardInfo}
-
-
-getCardInfo('sd58').then().catch()
+// getCardInfo('sd58').then().catch()

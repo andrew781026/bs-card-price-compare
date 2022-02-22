@@ -11,4 +11,4 @@ const errorWrapper = function (func) {
     return (req, res, next) => func(req, res, next).then().catch(err => next(err))
 };
 
-module.exports = errorWrapper;
+export default errorWrapper

@@ -1,7 +1,12 @@
 // Use dotenv to read .env vars into Node
 require('dotenv').config();
 
-const line = require('@line/bot-sdk');
+import {FlexMessage, QuickReplyItem} from "@line/bot-sdk";
+import * as line from "@line/bot-sdk";
+import {FlexBubble, MessageAction} from "@line/bot-sdk/lib/types";
+
+import {db} from "../firebase/init";
+import {getCardInfo} from "../service/cheerio";
 
 const channelAccessToken = process.env.LineChannelAccessToken;
 const channelSecret = process.env.LineChannelSecret;
@@ -9,10 +14,16 @@ const channelSecret = process.env.LineChannelSecret;
 // create LINE SDK client
 const client = new line.Client({channelAccessToken, channelSecret});
 
-const {db} = require('../firebase/init')
-const {getCardInfo} = require('../service/cheerio')
+interface CardInfo {
+    cardId?: string,
+    cardName?: string,
+    cardPrice?: string,
+    cardStock?: string,
+    cardImage?: string,
+    cardBuyLink?: string,
+}
 
-async function msgHandler(event) {
+export async function msgHandler(event) {
 
     // firesql - https://firebaseopensource.com/projects/jsayol/firesql/ 也許不錯使用
     const userId = event.source.userId;
@@ -45,15 +56,23 @@ async function msgHandler(event) {
 
         const searchTexts = await getLast10Search({userId});
 
+        const items: QuickReplyItem[] = searchTexts.map(text => {
+
+            // 強制轉型 to Action
+            const action = {type: 'message', label: text, text} as (MessageAction & { label: string });
+
+            return ({
+                type: "action",
+                action
+            })
+        })
+
         return client.replyMessage(event.replyToken,
             {
                 type: 'text',
                 text: '歷史查詢',
                 quickReply: {
-                    items: searchTexts.map(text => ({
-                        "type": "action",
-                        "action": {type: 'message', label: text, text}
-                    }))
+                    items
                 },
             }
         );
@@ -76,7 +95,7 @@ async function msgHandler(event) {
     if (cardInfo && cardInfo.length > 0) saveSearchText({userId, searchText})
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
-    const getSingleCard = card => {
+    const getSingleCard = (card: CardInfo): FlexBubble => {
 
         return {
             "type": "bubble",
@@ -100,10 +119,11 @@ async function msgHandler(event) {
                 "type": "image",
                 "url": card.cardImage,
                 "size": "full",
-                "aspectRatio": "13:17",
+                "aspectRatio": "3:1", // 13:17
                 "aspectMode": "fit",
                 "action": {
                     "type": "uri",
+                    "label": card.cardBuyLink,
                     "uri": card.cardBuyLink
                 }
             },
@@ -143,7 +163,7 @@ async function msgHandler(event) {
         }
     }
 
-    const getMulti = cardInfo => {
+    const getMulti = (cardInfo): FlexMessage => {
 
         return {
             "type": "flex",
@@ -157,13 +177,11 @@ async function msgHandler(event) {
 
     const message = getMulti(cardInfo);
 
-    return client.replyMessage(event.replyToken, [
-        message
-    ]);
+    return client.replyMessage(event.replyToken, [message]);
 }
 
 // event handler
-async function handleEvent(event) {
+export const handleEvent = async event => {
 
     console.log(`User ID: ${event.source.userId}`); // 要將 userId 所有的對話做儲存 , 才能做上下文分析
     console.log('[line-webhook-req] event=', event); // log the event msg
@@ -179,5 +197,3 @@ async function handleEvent(event) {
 
     // 可參考的完整範例 : https://github.com/clarencetw/line-bot/blob/master/routes/line.js
 }
-
-module.exports = {handleEvent};

@@ -1,5 +1,5 @@
 // Use dotenv to read .env vars into Node
-require('dotenv').config({path:'../../.env'});
+require('dotenv').config({path: '../../.env'});
 
 const {initializeApp, applicationDefault, cert} = require('firebase-admin/app');
 const {getFirestore, Timestamp, FieldValue} = require('firebase-admin/firestore');
@@ -14,6 +14,4 @@ initializeApp({
     credential: cert(serviceAccount)
 });
 
-const db = getFirestore();
-
-module.exports = {db}
+export const db = getFirestore();

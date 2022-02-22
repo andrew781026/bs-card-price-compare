@@ -6,7 +6,9 @@
   "license": "MIT",
   "scripts": {
     "ngrok": "node ./ngrok.js",
-    "start": "ts-node src/index.ts"
+    "tsc": "tsc --project tsconfig.json",
+    "start": "ts-node src/index.ts",
+    "tsc-start": "npm run tsc && node dist/index.js"
   },
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",

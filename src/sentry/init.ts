@@ -1,7 +1,7 @@
 // Use dotenv to read .env vars into Node
 require('dotenv').config({path: '../../.env'});
 
-const Sentry = require('@sentry/node');
+import * as Sentry from "@sentry/node";
 
 const Sentry_dsn = process.env.Sentry_dsn;
 
