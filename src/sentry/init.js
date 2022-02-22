@@ -7,14 +7,24 @@ const Sentry_dsn = process.env.Sentry_dsn;
 
 const initSentry = ({app}) => {
 
+    // sample codes : https://getsentry.github.io/sentry-javascript/modules/minimal.html
     Sentry.init({
         debug: true,
         // dsn 從右側連結取得 : https://sentry.io/settings/ezoom/projects/bs-card-price-compare/keys/
         dsn: Sentry_dsn,
     });
 
-    // The error handler must be before any other error middleware and after all controllers
-    // app.use(Sentry.Handlers.errorHandler());
+    /*
+        // Capture exceptions, messages or manual events
+        Sentry.captureMessage('Hello, world!');
+        Sentry.captureException(new Error('Good bye'));
+        Sentry.captureEvent({
+            message: 'Manual',
+            stacktrace: [
+                // ...
+            ],
+        });
+    */
 
     app.get("/debug-sentry", function mainHandler(req, res) {
         throw new Error("My first Sentry error!");

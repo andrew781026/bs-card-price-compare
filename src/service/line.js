@@ -14,6 +14,7 @@ const {getCardInfo} = require('../service/cheerio')
 
 async function msgHandler(event) {
 
+    // firesql - https://firebaseopensource.com/projects/jsayol/firesql/ 也許不錯使用
     const userId = event.source.userId;
     const docRef = db.collection('events').doc(`${userId}-${event.timestamp}`);
 

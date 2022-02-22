@@ -11,6 +11,8 @@ async function getCardInfo(name) {
 
     const htmlStr = response.data;
 
+    console.log(htmlStr)
+
     /*
        $('.card_list_box li.card_unit') -> 卡片資訊
        in li.card_unit :
@@ -50,3 +52,6 @@ async function getCardInfo(name) {
 }
 
 module.exports = {getCardInfo}
+
+
+getCardInfo('sd58').then().catch()
