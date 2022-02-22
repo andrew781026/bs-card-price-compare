@@ -1,13 +1,13 @@
-// カードショップ 遊々亭 - yuyutei
+// buyee - 爬蟲
 
-const axios = require('axios');
-const cheerio = require('cheerio');
-const queryString = require('query-string');
+import axios from "axios";
+import * as cheerio from "cheerio";
+import * as queryString from "query-string";
 
 // Using async/await
-async function getCardInfo(name) {
+export const getCardInfo = async (name) => {
 
-    const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=${name}`);
+    const response = await axios.get(`https://buyee.jp/item/search/yahoo/shopping?query=${name}`);
 
     const htmlStr = response.data;
 
@@ -50,8 +50,5 @@ async function getCardInfo(name) {
 
     return cardInfos;
 }
-
-module.exports = {getCardInfo}
-
 
 getCardInfo('sd58').then().catch()

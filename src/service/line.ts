@@ -4,9 +4,10 @@ require('dotenv').config();
 import {FlexMessage, QuickReplyItem} from "@line/bot-sdk";
 import * as line from "@line/bot-sdk";
 import {FlexBubble, MessageAction} from "@line/bot-sdk/lib/types";
+import {CardInfo} from "../types/caraInfo";
 
 import {db} from "../firebase/init";
-import {getCardInfo} from "../service/cheerio";
+import {getCardInfo} from "./yuyutei";
 
 const channelAccessToken = process.env.LineChannelAccessToken;
 const channelSecret = process.env.LineChannelSecret;
@@ -14,24 +15,13 @@ const channelSecret = process.env.LineChannelSecret;
 // create LINE SDK client
 const client = new line.Client({channelAccessToken, channelSecret});
 
-interface CardInfo {
-    cardId?: string,
-    cardName?: string,
-    cardPrice?: string,
-    cardStock?: string,
-    cardImage?: string,
-    cardBuyLink?: string,
-}
-
-export async function msgHandler(event) {
+export const msgHandler = async event => {
 
     // firesql - https://firebaseopensource.com/projects/jsayol/firesql/ 也許不錯使用
     const userId = event.source.userId;
     const docRef = db.collection('events').doc(`${userId}-${event.timestamp}`);
 
-    docRef.set(event)
-        .then(console.log)
-        .catch(console.error);
+    docRef.set(event).then(console.log).catch(console.error);
 
     // event.source.userId - 建立同一個人 , 以前查過的一些列表 => 用 "歷史" 來叫出來
     if (event.message.text === '歷史') {
@@ -92,7 +82,7 @@ export async function msgHandler(event) {
 
     const searchText = event.message.text;
     const cardInfo = await getCardInfo(searchText);
-    if (cardInfo && cardInfo.length > 0) saveSearchText({userId, searchText})
+    if (cardInfo && cardInfo.length > 0) saveSearchText({userId, searchText});
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = (card: CardInfo): FlexBubble => {
@@ -119,11 +109,12 @@ export async function msgHandler(event) {
                 "type": "image",
                 "url": card.cardImage,
                 "size": "full",
-                "aspectRatio": "3:1", // 13:17
+                // @ts-ignore
+                "aspectRatio": "13:17", // 13:17
                 "aspectMode": "fit",
                 "action": {
                     "type": "uri",
-                    "label": card.cardBuyLink,
+                    "label": '連結',
                     "uri": card.cardBuyLink
                 }
             },
@@ -177,7 +168,10 @@ export async function msgHandler(event) {
 
     const message = getMulti(cardInfo);
 
-    return client.replyMessage(event.replyToken, [message]);
+    console.log('message', message);
+
+    // @ts-ignore
+    return client.replyMessage(event.replyToken, [message, {type: 'text', text: 'HAHA'}]);
 }
 
 // event handler

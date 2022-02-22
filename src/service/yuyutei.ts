@@ -1,17 +1,18 @@
-// 在此作爬蟲的事情
+// 遊々亭 - 爬蟲
 
-const axios = require('axios');
-const cheerio = require('cheerio');
-const queryString = require('query-string');
+import axios from "axios";
+import * as cheerio from "cheerio";
+import * as queryString from "query-string";
+import {getLimiter} from "../utils/bottleneck";
 
 // Using async/await
-export const getCardInfo = async (name) => {
+export const getCardInfo = getLimiter('yuyutei').wrap(async (name) => {
 
     const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=${name}`);
 
     const htmlStr = response.data;
 
-    console.log(htmlStr)
+    // console.log(htmlStr)
 
     /*
        $('.card_list_box li.card_unit') -> 卡片資訊
@@ -49,6 +50,6 @@ export const getCardInfo = async (name) => {
     }).get();
 
     return cardInfos;
-}
+});
 
 // getCardInfo('sd58').then().catch()

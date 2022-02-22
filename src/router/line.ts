@@ -4,6 +4,7 @@ require('dotenv').config();
 
 import * as line from "@line/bot-sdk";
 import * as express from "express";
+
 const lineRouter = express.Router();
 import errorWrapper from "../utils/errorWrapper";
 import {handleEvent} from "../service/line";
@@ -66,8 +67,10 @@ lineRouter.post('/', errorWrapper(async (req, res) => {
 
     for (const event of events) {
 
-        const result = await handleEvent(event)
-        results.push(result)
+        console.log('HERE=');
+        const result = await handleEvent(event);
+        console.log('result=', result);
+        results.push(result);
     }
 
     res.json(results)
