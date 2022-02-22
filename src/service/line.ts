@@ -1,4 +1,6 @@
 // Use dotenv to read .env vars into Node
+import {type} from "os";
+
 require('dotenv').config();
 
 import {FlexMessage, QuickReplyItem} from "@line/bot-sdk";
@@ -7,7 +9,8 @@ import {FlexBubble, MessageAction} from "@line/bot-sdk/lib/types";
 import {CardInfo} from "../types/caraInfo";
 
 import {db} from "../firebase/init";
-import {getCardInfo} from "./yuyutei";
+import * as YuyuteiService from "./yuyutei";
+import * as FullaheadService from "./fullahead";
 
 const channelAccessToken = process.env.LineChannelAccessToken;
 const channelSecret = process.env.LineChannelSecret;
@@ -81,8 +84,9 @@ export const msgHandler = async event => {
     }
 
     const searchText = event.message.text;
-    const cardInfo = await getCardInfo(searchText);
-    if (cardInfo && cardInfo.length > 0) saveSearchText({userId, searchText});
+    const yuyuteiCardInfo = await YuyuteiService.getCardInfo(searchText);
+    const fullaheadCardInfo = await FullaheadService.getCardInfo(searchText);
+    saveSearchText({userId, searchText});
 
     // flex 模擬器 : https://developers.line.biz/flex-simulator/
     const getSingleCard = (card: CardInfo): FlexBubble => {
@@ -166,12 +170,17 @@ export const msgHandler = async event => {
         }
     }
 
-    const message = getMulti(cardInfo);
+    // const message = getMulti(cardInfo);
 
-    console.log('message', message);
+    const messages = [
+        {"type": "text", "text": '遊々亭 - 卡價'},
+        getMulti(yuyuteiCardInfo),
+        {"type": "text", "text": 'フルアヘッド - 卡價',},
+        getMulti(fullaheadCardInfo),
+    ]
 
     // @ts-ignore
-    return client.replyMessage(event.replyToken, [message, {type: 'text', text: 'HAHA'}]);
+    return client.replyMessage(event.replyToken, messages);
 }
 
 // event handler

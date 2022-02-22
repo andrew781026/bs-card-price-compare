@@ -67,9 +67,7 @@ lineRouter.post('/', errorWrapper(async (req, res) => {
 
     for (const event of events) {
 
-        console.log('HERE=');
         const result = await handleEvent(event);
-        console.log('result=', result);
         results.push(result);
     }
 
