@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "lib": ["es2018"],
-    "target": "es2018",     // 採用ECM標準
+    "lib": ["ES2020"],
+    "target": "ES2020",     // 採用ECM標準
     "module": "commonjs",
     "outDir": "./dist",  // 編譯後產生的路徑
     "baseUrl": "./src",   // 取得ts檔的路徑
