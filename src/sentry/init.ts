@@ -5,7 +5,7 @@ const Sentry = require('@sentry/node');
 
 const Sentry_dsn = process.env.Sentry_dsn;
 
-const initSentry = ({app}) => {
+export const initSentry = ({app}) => {
 
     // sample codes : https://getsentry.github.io/sentry-javascript/modules/minimal.html
     Sentry.init({
@@ -42,5 +42,3 @@ const initSentry = ({app}) => {
         res.end('res.sentry=' + res.sentry + "\n");
     });
 }
-
-module.exports = {initSentry};

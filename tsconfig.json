@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es6",     // 採用ECM標準
+    "module": "commonjs",
+    "outDir": "./dist",  // 編譯後產生的路徑
+    "baseUrl": "./src",   // 取得ts檔的路徑
+    // 針對 typeorm 要開的設定，如果是TypeScript version 3.3 或以上
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    // 如果之後在entity的property設定有問題的話就加以下這行
+    "strictPropertyInitialization": false
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

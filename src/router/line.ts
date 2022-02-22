@@ -72,8 +72,6 @@ lineRouter.post('/', errorWrapper(async (req, res) => {
     res.json(results)
 }));
 
-const initLineService = ({app}) => {
+export const initLineService = ({app}) => {
     app.use(`/line/callback`, line.middleware({channelAccessToken, channelSecret}), lineRouter);
 }
-
-module.exports = {initLineService};
