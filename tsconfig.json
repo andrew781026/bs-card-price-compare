@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": true,
+    // Node 版本跟 target 的對照 : https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
     "lib": ["ES2020"],
     "target": "ES2020",     // 採用ECM標準
     "module": "commonjs",
