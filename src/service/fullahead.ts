@@ -3,7 +3,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import * as iconv from "iconv-lite";
-import * as FileReader from "filereader";
 
 // Using async/await
 export const getCardInfo = async (name) => {
@@ -11,18 +10,13 @@ export const getCardInfo = async (name) => {
     console.log('fullahead - getCardInfo')
 
     const response = await axios.get(`https://fullahead-tcg.com/shop/shopbrand.html?search=${name}`, {
-        responseType: 'blob',
+        responseType: 'arraybuffer',
         transformResponse: [function (data) {
-            let reader = new FileReader();
-            reader.readAsText(data, 'EUC-JP');
-            reader.onload = function (e) {
-                console.log(reader.result);
-            }
-            return data;
-        }]
+            return iconv.decode(Buffer.from(data), 'EUC-JP')
+        }],
     });
 
-    const htmlStr = iconv.decode(Buffer.from(response.data), 'EUC-JP');
+    const htmlStr = response.data;
 
     console.log(htmlStr);
 

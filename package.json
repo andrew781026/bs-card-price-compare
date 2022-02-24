@@ -21,7 +21,6 @@
     "bottleneck": "^2.19.5",
     "cheerio": "^1.0.0-rc.10",
     "express": "^4.17.1",
-    "filereader": "^0.10.3",
     "firebase-admin": "^10.0.0",
     "iconv-lite": "^0.6.3",
     "query-string": "^7.0.1",
