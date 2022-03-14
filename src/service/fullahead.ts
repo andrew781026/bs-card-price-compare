@@ -18,8 +18,6 @@ export const getCardInfo = async (name) => {
 
     const htmlStr = response.data;
 
-    console.log(htmlStr);
-
     /*
        $('.card_list_box li.card_unit') -> 卡片資訊
        in li.card_unit :

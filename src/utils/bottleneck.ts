@@ -3,7 +3,7 @@ import {performance} from "perf_hooks";
 
 const limiters = {};
 
-function _uuid() {
+export function _uuid() {
     var d = Date.now();
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
         d += performance.now(); //use high-precision timer if available

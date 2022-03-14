@@ -9,7 +9,7 @@
     "tsc": "tsc --project tsconfig.json",
     "start": "ts-node src/index.ts",
     "start:fullahead": "ts-node src/service/fullahead.ts",
-    "start:reten": "ts-node src/service/reten.ts",
+    "start:ruten": "ts-node src/service/ruten.ts",
     "start:buyee": "ts-node src/service/buyee.ts",
     "tsc-start": "npm run tsc && node dist/index.js"
   },
