@@ -20,7 +20,7 @@ export const getCardInfo = async (name) => {
     // console.log(htmlStr)
 
     /*
-       $('.card_list_box li.card_unit') -> 卡片資訊
+       $('.search-result-container .product-item') -> 卡片資訊
        in li.card_unit :
            p.id - 卡號
            p.name - 卡名
@@ -28,6 +28,8 @@ export const getCardInfo = async (name) => {
            p.image img[src] - 圖片
            p.price - 價格 (日幣)
            p.stock - 剩餘數量
+
+           // https://rate.bot.com.tw/xrt/flcsv/0/day -> 會下載到 csv 檔案
 
     */
 

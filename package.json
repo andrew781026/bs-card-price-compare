@@ -11,6 +11,7 @@
     "start:fullahead": "ts-node src/service/fullahead.ts",
     "start:ruten": "ts-node src/service/ruten.ts",
     "start:buyee": "ts-node src/service/buyee.ts",
+    "start:exchangeRate": "ts-node src/service/exchangeRate.ts",
     "tsc-start": "npm run tsc && node dist/index.js"
   },
   "dependencies": {
