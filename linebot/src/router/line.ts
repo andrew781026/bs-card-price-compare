@@ -1,7 +1,6 @@
 // Use dotenv to read .env vars into Node
 require('dotenv').config();
 
-
 import * as line from "@line/bot-sdk";
 import * as express from "express";
 
