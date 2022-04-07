@@ -1,6 +1,6 @@
 {
   "name": "bs-card-price-compare",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "bs 卡價比對",
   "main": "src/index.js",
   "license": "MIT",
