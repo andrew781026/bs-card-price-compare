@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header>
+      <el-header height="60px">
         <el-menu
             :default-active="activeIndex"
             class="el-menu-demo"
@@ -14,26 +14,21 @@
           <el-menu-item index="exchange">匯率</el-menu-item>
         </el-menu>
       </el-header>
-      <el-container>
-        <el-aside width="200px">Aside</el-aside>
-        <el-container>
-          <el-main>
-            <router-view v-slot="{ Component }">
-              <transition name="fade" mode="out-in">
-                <component :is="Component"/>
-              </transition>
-            </router-view>
-          </el-main>
-          <el-footer>Footer</el-footer>
-        </el-container>
-      </el-container>
+      <el-main class="main">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component"/>
+          </transition>
+        </router-view>
+      </el-main>
+      <el-footer height="60px">Footer</el-footer>
     </el-container>
   </div>
 </template>
 
 <script lang="ts">
-import {ref, defineComponent} from 'vue'
-import {useRouter, Router} from 'vue-router'
+import {computed, defineComponent} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 
@@ -42,7 +37,8 @@ export default defineComponent({
   setup() {
 
     const router = useRouter()
-    const activeIndex = ref('main')
+    const route = useRoute()
+    const activeIndex = computed(() => route.name)
 
     const handleSelect = (key: string) => router.push({name: key, params: {id: 3}})
 
@@ -78,5 +74,10 @@ export default defineComponent({
 
 body {
   margin: 0;
+}
+
+.main {
+  overflow: auto;
+  height: calc(100vh - 120px);
 }
 </style>

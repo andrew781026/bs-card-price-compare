@@ -1,8 +1,8 @@
 <template>
   <el-row :gutter="20">
     <el-col
-        :xs="24" :sm="10"
-        v-for="(o, index) in 2"
+        :xs="12" :sm="6" :md="4" :lg="3" :xl="2"
+        v-for="(o, index) in 10"
         :key="o"
         class="my-20"
     >
