@@ -1,11 +1,10 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import {initLineService} from "./router/line";
+
+require('./knex/init');
 
 // Initialize Express
 const app: express.Application = express();
-
-initLineService({app});
 
 // bodyParser 會影響 @line/bot-sdk 運作
 app.use(bodyParser.json());
@@ -16,8 +15,8 @@ app.get("/", (req: express.Request, res: express.Response) => {
 });
 
 // Initialize server
-app.listen(5013, () => {
-    console.log("Running on port 5013.");
+app.listen(5003, () => {
+    console.log("Running on port 5003.");
 });
 
 class HttpException extends Error {
@@ -83,7 +82,5 @@ app.use(function (err: HttpException, req: (express.Request & { id: string }), r
     }
     res.status(status).json(error);
 });
-
-// line-bot 的最小範例 : https://line.github.io/line-bot-sdk-nodejs/getting-started/basic-usage.html#synopsis
 
 module.exports = app;
