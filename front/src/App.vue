@@ -21,7 +21,7 @@
           </transition>
         </router-view>
       </el-main>
-      <el-footer height="60px">Footer</el-footer>
+      <el-footer height="60px" class="footer">Footer</el-footer>
     </el-container>
   </div>
 </template>
@@ -65,6 +65,15 @@ export default defineComponent({
 
 .common-layout > .el-container {
   min-height: 100vh;
+}
+
+.footer{
+  background-color: #c71313;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: aliceblue;
+  font-size: 40px;
 }
 
 .el-menu-demo {

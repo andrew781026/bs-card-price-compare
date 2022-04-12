@@ -4,12 +4,14 @@
         :src="bigPic"
         class="image"
     />
-    <div style="padding: 14px">
-      <span>Yummy hamburger</span>
-      <div class="bottom">
-        <time class="time">{{ cardName }}</time>
-        <el-button type="text" class="button" @click="window.open(buyLink, '_blank').focus();">購買</el-button>
-      </div>
+    <div class="p-3" style="z-index: 10;background-color: #fff">
+      <div class="text-2xl font-900">{{ cardId }}</div>
+      <p>{{ cardName }}</p>
+      <p class="flex justify-between">
+        <span>${{ price }}</span>
+        <span>殘：{{ stock }}</span>
+      </p>
+      <el-button type="primary" class="w-full" @click="window.open(buyLink, '_blank').focus();">購買</el-button>
     </div>
   </el-card>
 </template>
@@ -37,7 +39,7 @@ export default defineComponent({
       required: true
     },
     stock: { // 可購買數量
-      type: String,
+      type: [String, Number],
       required: true
     },
     cardId: {   // 卡片編號
@@ -49,7 +51,7 @@ export default defineComponent({
       required: true
     },
     price: {   // 卡片價格
-      type: String,
+      type: [String, Number],
       required: true
     }
   },
@@ -57,9 +59,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.time {
-  font-size: 13px;
-  color: #999;
+.cardHeader {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 900;
+  padding: 0.5rem 0.75rem;
+  background-color: #adaaaa;
 }
 
 .bottom {
@@ -78,5 +82,12 @@ export default defineComponent({
 .image {
   width: 100%;
   display: block;
+  cursor: pointer;
+  transition: all 0.2s;
 }
+/*
+.image:hover{
+  transform: scale(1.2);
+}
+ */
 </style>
