@@ -2,7 +2,7 @@
   <div>
     <template v-for="info in data" :key="info.searchId">
       <h2>{{ info.site }}</h2>
-      <el-row :gutter="20">
+      <el-row :gutter="20" v-if="info.done !== false">
         <el-col
             :xs="12" :sm="6" :md="4" :lg="3" :xl="2"
             v-for="(s, index) in info.cards"
@@ -12,6 +12,32 @@
           <SingleCard v-bind="s"></SingleCard>
         </el-col>
       </el-row>
+      <template v-else>
+        <div class="crawWrap">
+          <span class="loading">載入中...</span>
+          <img src="../assets/snail.gif" alt="爬蟲中...">
+        </div>
+        <h4>爬蟲抓取資料中~~~</h4>
+        <el-skeleton style="width: 240px" :loading="true" animated>
+          <template #template>
+            <el-skeleton-item variant="image" style="width: 240px; height: 240px"/>
+            <div style="padding: 14px">
+              <el-skeleton-item variant="h3" style="width: 50%"/>
+              <div
+                  style="
+              display: flex;
+              align-items: center;
+              margin-top: 16px;
+              height: 16px;
+            "
+              >
+                <el-skeleton-item variant="text" style="margin-right: 16px"/>
+                <el-skeleton-item variant="text" style="width: 30%"/>
+              </div>
+            </div>
+          </template>
+        </el-skeleton>
+      </template>
     </template>
   </div>
 </template>
@@ -36,6 +62,7 @@ const data = [
   {
     searchId: _uuid(),
     site: 'カードショップ 遊々亭',
+    done: true,
     cards: new Array(10).fill('').map(() => ({
       bigPic: 'https://img.yuyu-tei.jp/card_image/bs/front/sd63/10003.jpg',
       buyLink: 'https://yuyu-tei.jp/game_bs/carddetail/cardpreview.php?VER=sd63&CID=10003&MODE=sell',
@@ -49,6 +76,7 @@ const data = [
   {
     searchId: _uuid(),
     site: 'バトルスピリッツ販売・買取専門店【フルアヘッド】',
+    done: false,
     cards: new Array(10).fill('').map(() => ({
       bigPic: 'https://img.ruten.com.tw/s2/d/66/34/22212338154036_414.png',
       buyLink: 'https://www.ruten.com.tw/item/show?22212338154036',
@@ -62,6 +90,7 @@ const data = [
   {
     searchId: _uuid(),
     site: '露天拍賣',
+    done: true,
     cards: new Array(10).fill('').map(() => ({
       bigPic: 'https://img.ruten.com.tw/s2/d/66/34/22212338154036_414.png',
       buyLink: 'https://www.ruten.com.tw/item/show?22212338154036',
@@ -75,6 +104,7 @@ const data = [
   {
     searchId: _uuid(),
     site: 'Buyee',
+    done: true,
     cards: new Array(10).fill('').map(() => ({
       bigPic: 'https://img.ruten.com.tw/s2/d/66/34/22212338154036_414.png',
       buyLink: 'https://www.ruten.com.tw/item/show?22212338154036',
@@ -93,6 +123,7 @@ export default {
     SingleCard
   },
   setup() {
+    // 直接使用查詢條件當作 , 當頁的結果
     const currentDate = ref(new Date())
 
     return {currentDate, data}
@@ -101,6 +132,22 @@ export default {
 </script>
 
 <style scoped>
+
+.crawWrap {
+  width: 100%;
+  position: relative;
+}
+
+.crawWrap > img {
+  width: 600px;
+}
+
+.crawWrap > .loading {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  font-size: 40px;
+}
 
 .card-wrap {
   display: flex;
