@@ -332,3 +332,5 @@ gulp.task(makeFn("compile-and-upload-api", "compile and upload node-api files to
 
 const webFn = gulp.series('compile-template', '_replace-config-files', '_build-source', '_upload-WEB-to-server');
 gulp.task(makeFn("compile-and-upload-web", "compile and upload web-html files to server", {'-e': 'environment (optional)'}, webFn));
+
+// docker-compose -p ezoom-line-bot -f docker-compose.yml up -d --no-recreate

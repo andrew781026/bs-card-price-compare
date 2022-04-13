@@ -1,0 +1,51 @@
+### WARNING: This file is generated from template, edit the file under build-resources/template ###
+
+version: '3.9'
+
+services:
+  db:
+    restart: always
+    image: mysql:8.0
+    container_name: bs-compare-db
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=927381
+      - MYSQL_DATABASE=bs
+      - TZ=Asia/Taipei
+    ports:
+      - "13306:3306"
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+  api:
+    restart: always
+    image: "bs-compare-api"
+    container_name: bs-compare-api
+    volumes:
+      - "/home/ubuntu/bs-compare/setup/api:/home/node"
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    environment:
+      - TZ=Asia/Taipei
+    ports:
+      - "3003:3003"
+    # start this service after depends_on services started
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+  redis:
+    restart: always
+    image: redis:6.2.6
+    container_name: bs-compare-redis
+    ports:
+      - '6379:6379'
+  rabbitmq:
+    restart: always
+    image: rabbitmq:management
+    container_name: bs-compare-mq
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=729381
+    ports:
+      - '5672:5672'
+      - '15672:15672'
