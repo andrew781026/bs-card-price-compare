@@ -6,6 +6,7 @@ config.js
 .vscode
 .idea
 
+test
 crashes
 node_modules
 
