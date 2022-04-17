@@ -1,61 +1,99 @@
 // 露天 - 爬蟲
 
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import * as cheerio from "cheerio";
-import * as queryString from "query-string";
-import { _uuid } from "../utils/bottleneck";
+import {_uuid, getFirstNumber, getLimiter, getPageArr, timer} from "../utils/bottleneck";
+import {CardInfo} from "../type/cardInfo";
 
-// Using async/await
-export const getCardInfo = async (name) => {
+// 每 1 秒只會有 3 個查詢
+const limiter = getLimiter('buyee-axios', 333, 1);
 
-    const response = await axios.get(`https://www.ruten.com.tw/find/?q=${name}`,
-        {
-            headers: {
-                'User-Agent': 'GoogleBot'
-            }
-        });
+const getConfig = (search?, page?): AxiosRequestConfig => {
 
+    return {
+        headers: {'User-Agent': 'GoogleBot'},
+        params: {q: `BS+${search}`, p: page},
+    }
+}
+
+const getLastPage = async (name: string): Promise<number> => {
+
+    const response = await limiter.schedule(() => axios.get(`https://www.ruten.com.tw/find/`, getConfig(name)));
     const htmlStr = response.data;
 
-    // console.log(htmlStr)
-
-    /*
-       $('.search-result-container .product-item') -> 卡片資訊
-       in li.card_unit :
-           p.id - 卡號
-           p.name - 卡名
-           .image_box > a - 購買連結  /game_bs/carddetail/cardpreview.php?VER=sd58&CID=10017&MODE=sell ( 要加 https://yuyu-tei.jp 當開頭 )
-           p.image img[src] - 圖片
-           p.price - 價格 (日幣)
-           p.stock - 剩餘數量
-
-           // https://rate.bot.com.tw/xrt/flcsv/0/day -> 會下載到 csv 檔案
-
-    */
-
+    // console.log('htmlStr->', htmlStr);
     const $ = cheerio.load(htmlStr);
+    const lastPage = $('ul.rt-pager li:last-of-type').text()
 
-    const cardInfos = $('.search-result-container .product-item').map((i, el) => {
+    return parseInt(lastPage)
+}
 
-        const $card = $(el);
+const getCardInfosByPage = async (name: string, page: number): Promise<CardInfo[]> => {
 
-        const cardId = $card.find('.rt-goods-list-item').attr('requestid')?.trim() ||  _uuid();
-        const cardName = $card.find('.rt-goods-list-item-name span.product-card-name-text').text()?.replace(/[\n\t]/ig, '').trim();
+    // https://www.ruten.com.tw/find/?q=BS+bsc32&p=3
+    const response = await limiter.schedule(() => axios.get(`https://www.ruten.com.tw/find/`, getConfig(name, page)));
+    const pagedHtml = response.data;
+    // timer.log(`第 ${page} 頁資料：`);
+    const $p = cheerio.load(pagedHtml);
+
+    return $p('.search-result-container .product-item').map((i, el) => {
+
+        const $card = $p(el);
+
+        const card_id = $card.find('.rt-goods-list-item').attr('requestid')?.trim() || _uuid();
+        const card_name = $card.find('.rt-goods-list-item-name span.product-card-name-text').text()?.replace(/[\n\t]/ig, '').trim();
         const cardPrice = $card.find('.rt-goods-list-item-price span.rt-text-price').text()?.replace(/[\n\t]/ig, '').trim();
 
-        // - 已銷售數量
-        const cardStock = $card.find('.rt-goods-list-item-sell-info a.rt-goods-list-item-sell-link').text()?.replace(/[\n\t]/ig, '').trim();
+        const buy_link = $card.find('.rt-goods-list-item-image-wrap a.rt-goods-list-item-image-link').attr('href');
+        const small_pic = $card.find('.rt-goods-list-item-image-wrap img.rt-goods-list-item-image').attr('src');
 
-        const cardBuyLink =  $card.find('.rt-goods-list-item-image-wrap a.rt-goods-list-item-image-link').attr('href');
-        const cardImage =  $card.find('.rt-goods-list-item-image-wrap img.rt-goods-list-item-image').attr('src');
-
-        const parsed = queryString.parse(cardBuyLink.split('?')[1]);
-
-        return {cardId, cardName, cardPrice, cardStock, cardImage, cardBuyLink};
+        return {
+            card_id,
+            card_name,
+            price: cardPrice ? parseInt(cardPrice) : 0,
+            small_pic,
+            buy_link,
+            currency: 'TWD'
+        };
 
     }).get();
+}
 
-    return cardInfos;
+const getCardInfoBySingle = async (cardInfo: CardInfo): Promise<CardInfo> => {
+
+    const response = await limiter.schedule(() => axios.get(cardInfo.buy_link, getConfig()));
+    const singleHtml = response.data;
+    timer.log(`單筆資料 - ${cardInfo.card_name}：`);
+    const $s = cheerio.load(singleHtml);
+
+
+    // 單頁中的 - 大圖 . stock
+    const bigPic = $s('.item-gallery-main-image > img').attr('src');
+    const cardStock = $s('span.rt-text-label > strong.rt-text-isolated').text();
+
+    console.log(`(cardStock , bigPic) = (${cardStock},${bigPic})`)
+    cardInfo.stock = cardStock ? parseInt(cardStock) : 0;
+    cardInfo.big_pic = bigPic;
+
+    if (!bigPic) {
+
+        const goodId = cardInfo.buy_link
+
+        // 從 API 取資料 https://rapi.ruten.com.tw/api/items/v2/list?gno=[商品ID]&level=simple
+    }
+
+    return cardInfo;
+}
+
+// Using async/await
+export const getCardInfo = async (name: string): Promise<CardInfo[]> => {
+
+    timer.start();
+
+    const lastPage = await getLastPage(name);
+    const pagedCardInfos = await Promise.all(getPageArr(lastPage).map(async page => await getCardInfosByPage(name, page)));
+    const cardInfos = pagedCardInfos.reduce((pre, curr) => [...pre, ...curr])
+    return await Promise.all(cardInfos.map(getCardInfoBySingle));
 }
 
 getCardInfo('sd58').then(console.log).catch(console.error)

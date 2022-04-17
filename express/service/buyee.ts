@@ -75,7 +75,7 @@ const getCardInfoBySingle = async (cardInfo: CardInfo): Promise<CardInfo> => {
 // Using async/await
 export const getCardInfo = async (name: string): Promise<CardInfo[]> => {
 
-    timer.start();
+    // timer.start();
 
     const lastPage = await getLastPage(name);
     const pagedCardInfos = await Promise.all(getPageArr(lastPage).map(async page => await getCardInfosByPage(name, page)))

@@ -3,7 +3,7 @@
 import axios, {AxiosRequestConfig} from "axios";
 import * as cheerio from "cheerio";
 import * as iconv from "iconv-lite";
-import {getFirstNumber, getLimiter, getPageArr} from "../utils/bottleneck";
+import {getFirstNumber, getLimiter, getPageArr, timer} from "../utils/bottleneck";
 import {CardInfo} from "../type/cardInfo";
 
 // 每 1 秒只會有 3 個查詢
@@ -26,7 +26,7 @@ const getLastPage = async (name: string): Promise<number> => {
     const response = await limiter.schedule(() => axios.get(`https://fullahead-tcg.com/shop/shopbrand.html`, getConfig(name)));
     const htmlStr = response.data;
 
-    console.log('htmlStr->', htmlStr);
+    // console.log('htmlStr->', htmlStr);
     const $ = cheerio.load(htmlStr);
     const regex = /\d*/g // g = 全部 ( 因此會將所有符合的抓出來 )
     const bindStr = $('.pagerTxt').text()
@@ -60,7 +60,14 @@ const getCardInfosByPage = async (name: string, page: number): Promise<CardInfo[
 
         const small_pic = $card.find('span.itemImg > img').attr('src');
 
-        return {card_id, card_name, price: parseFloat(getFirstNumber(cardPrice)), small_pic, buy_link};
+        return {
+            card_id,
+            card_name,
+            price: parseFloat(getFirstNumber(cardPrice)),
+            small_pic,
+            buy_link,
+            currency: 'JYP'
+        };
 
     }).get();
 }
@@ -73,10 +80,10 @@ const getCardInfoBySingle = async (cardInfo: CardInfo): Promise<CardInfo> => {
     const $s = cheerio.load(singleHtml);
 
     // 單頁中的 - 大圖 . stock
-    const bigPic = $s('.product_images .image_main img').attr('src');
-    const cardStock = $s('table#detailTbl span[data-id]').text();
+    const bigPic = $s('.product_images #image_main img').attr('src');
+    const cardStock = $s('table#detailTbl span.M_item-stock-smallstock').text();
 
-    cardInfo.stock = cardStock ? parseFloat(cardStock) : 0;
+    cardInfo.stock = cardStock ? parseInt(getFirstNumber(cardStock)) : 0;
     cardInfo.big_pic = bigPic;
 
     return cardInfo;
@@ -84,6 +91,8 @@ const getCardInfoBySingle = async (cardInfo: CardInfo): Promise<CardInfo> => {
 
 // Using async/await
 export const getCardInfo = async (name: string) => {
+
+    // timer.start()
 
     const lastPage = await getLastPage(name);
     const pagedCardInfos = await Promise.all(getPageArr(lastPage).map(async page => await getCardInfosByPage(name, page)));
