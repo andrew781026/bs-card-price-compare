@@ -8,12 +8,18 @@ import {CardInfo} from "../type/cardInfo";
 // 每 1 秒只會有 3 個查詢
 const limiter = getLimiter('buyee-axios', 333, 1);
 
-const getConfig = (search?, page?): AxiosRequestConfig => {
+const getConfig = (search?, page?, gno?): AxiosRequestConfig => {
 
-    return {
-        headers: {'User-Agent': 'GoogleBot'},
-        params: {q: `BS+${search}`, p: page},
-    }
+    if (gno)
+        return {
+            headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'},
+            params: {gno, level: 'simple'}
+        }
+    else
+        return {
+            headers: {'User-Agent': 'GoogleBot'},
+            params: {q: `BS+${search}`, p: page},
+        }
 }
 
 const getLastPage = async (name: string): Promise<number> => {
@@ -21,7 +27,6 @@ const getLastPage = async (name: string): Promise<number> => {
     const response = await limiter.schedule(() => axios.get(`https://www.ruten.com.tw/find/`, getConfig(name)));
     const htmlStr = response.data;
 
-    // console.log('htmlStr->', htmlStr);
     const $ = cheerio.load(htmlStr);
     const lastPage = $('ul.rt-pager li:last-of-type').text()
 
@@ -61,26 +66,17 @@ const getCardInfosByPage = async (name: string, page: number): Promise<CardInfo[
 
 const getCardInfoBySingle = async (cardInfo: CardInfo): Promise<CardInfo> => {
 
-    const response = await limiter.schedule(() => axios.get(cardInfo.buy_link, getConfig()));
-    const singleHtml = response.data;
+
+    const goodsId = cardInfo.buy_link.match(/(https:\/\/)(.*\?)(\d*)/)[3]
+    const config = getConfig(null, null, goodsId)
+    const res = await limiter.schedule(() => axios.get('https://rapi.ruten.com.tw/api/items/v2/list', config))
+    const {num, images} = res.data.data[0];
+
+    cardInfo.stock = num;
+    cardInfo.big_pic = images.url[0];
+
     timer.log(`單筆資料 - ${cardInfo.card_name}：`);
-    const $s = cheerio.load(singleHtml);
-
-
-    // 單頁中的 - 大圖 . stock
-    const bigPic = $s('.item-gallery-main-image > img').attr('src');
-    const cardStock = $s('span.rt-text-label > strong.rt-text-isolated').text();
-
-    console.log(`(cardStock , bigPic) = (${cardStock},${bigPic})`)
-    cardInfo.stock = cardStock ? parseInt(cardStock) : 0;
-    cardInfo.big_pic = bigPic;
-
-    if (!bigPic) {
-
-        const goodId = cardInfo.buy_link
-
-        // 從 API 取資料 https://rapi.ruten.com.tw/api/items/v2/list?gno=[商品ID]&level=simple
-    }
+    console.log(`API 的 (cardStock , bigPic) = (${cardInfo.stock},${cardInfo.big_pic})`)
 
     return cardInfo;
 }
