@@ -6,6 +6,9 @@ import * as queryString from "query-string";
 import {getFirstNumber, getLimiter, getPageArr} from "../utils/bottleneck";
 import {CardInfo} from "../type/cardInfo";
 
+// 每 1 秒只會有 3 個查詢
+const limiter = getLimiter('yuyutei-axios', 333, 1);
+
 const getConfig = (name?): AxiosRequestConfig => {
 
     return {
@@ -15,7 +18,7 @@ const getConfig = (name?): AxiosRequestConfig => {
 
 const getCardInfos = async (name: string): Promise<CardInfo[]> => {
 
-    const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php`, getConfig(name));
+    const response = await limiter.schedule(() => axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php`, getConfig(name)));
     const pagedHtml = response.data;
     // timer.log(`第 ${page} 頁資料：`);
     const $p = cheerio.load(pagedHtml);
