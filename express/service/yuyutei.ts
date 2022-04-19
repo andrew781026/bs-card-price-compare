@@ -1,53 +1,77 @@
 // 遊々亭 - 爬蟲
 
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import * as cheerio from "cheerio";
 import * as queryString from "query-string";
-import {getLimiter} from "../utils/bottleneck";
+import {getFirstNumber, getLimiter, getPageArr} from "../utils/bottleneck";
+import {CardInfo} from "../type/cardInfo";
 
-// Using async/await
-export const getCardInfo = getLimiter('yuyutei').wrap(async (name) => {
+const getConfig = (name?): AxiosRequestConfig => {
 
-    const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php?name=${name}`);
+    return {
+        params: {name},
+    }
+}
 
-    const htmlStr = response.data;
+const getCardInfos = async (name: string): Promise<CardInfo[]> => {
 
-    /*
-       $('.card_list_box li.card_unit') -> 卡片資訊
-       in li.card_unit :
-           p.id - 卡號
-           p.name - 卡名
-           .image_box > a - 購買連結  /game_bs/carddetail/cardpreview.php?VER=sd58&CID=10017&MODE=sell ( 要加 https://yuyu-tei.jp 當開頭 )
-           p.image img[src] - 圖片
-           p.price - 價格 (日幣)
-           p.stock - 剩餘數量
+    const response = await axios.get(`https://yuyu-tei.jp/game_bs/sell/sell_price.php`, getConfig(name));
+    const pagedHtml = response.data;
+    // timer.log(`第 ${page} 頁資料：`);
+    const $p = cheerio.load(pagedHtml);
 
-    */
+    return $p('.card_list_box li.card_unit').map((i, el): CardInfo => {
 
-    const $ = cheerio.load(htmlStr);
+        const $card = $p(el);
 
-    const cardInfos = $('.card_list_box li.card_unit').map((i, el) => {
-
-        const $card = $(el);
-
-        const cardId = $card.find('p.id').text().replace(/[\n\t]/ig, '').trim();
-        const cardName = $card.find('p.name').text().replace(/[\n\t]/ig, '').trim();
+        const card_name = $card.find('p.name').text().replace(/[\n\t]/ig, '').trim();
+        const card_id = $card.find('p.id').text().replace(/[\n\t]/ig, '').trim();
         const cardPrice = $card.find('p.price').text().replace(/[\n\t]/ig, '').trim();
         const cardStock = $card.find('p.stock').text().replace(/[\n\t]/ig, '').trim();
-
-        const cardBuyLink = 'https://yuyu-tei.jp' + $card.find('.image_box > a').attr('href');
+        const buy_link = 'https://yuyu-tei.jp' + $card.find('.image_box > a').attr('href');
+        const small_pic = $card.find('.image_box p.image > img').attr('src');
 
         // https://img.yuyu-tei.jp/card_image/bs/90_126/sd58/10011.jpg -> 小圖
         // https://img.yuyu-tei.jp/card_image/bs/front/sd58/10011.jpg -> 大圖
 
-        const parsed = queryString.parse(cardBuyLink.split('?')[1]);
-        const cardImage = `https://img.yuyu-tei.jp/card_image/bs/front/${parsed.VER}/${parsed.CID}.jpg`;
+        const getStock = cardStock => {
 
-        return {cardId, cardName, cardPrice, cardStock, cardImage, cardBuyLink};
+            const noStock = '×'
+            const infiniteStock = '◯'
+
+            const tempStock = cardStock.replace('残：', '');
+
+            if (tempStock === noStock) return 0;
+            else if (tempStock === infiniteStock) return 1000;
+            else if (isNaN(parseInt(tempStock))) return 0;
+            else return parseInt(tempStock);
+        }
+
+        const parsed = queryString.parse(buy_link.split('?')[1]);
+        const big_pic = `https://img.yuyu-tei.jp/card_image/bs/front/${parsed.VER}/${parsed.CID}.jpg`;
+
+        return {
+            card_id,
+            card_name,
+            stock: getStock(cardStock),
+            price: parseFloat(getFirstNumber(cardPrice)),
+            small_pic,
+            big_pic,
+            buy_link,
+            currency: 'JYP'
+        };
 
     }).get();
+}
 
+// Using async/await
+export const getCardInfo = async (name) => {
+
+    // 遊々亭 沒有做分頁
+    const cardInfos = await getCardInfos(name);
     return cardInfos;
-});
+};
 
-// getCardInfo('sd58').then().catch()
+getCardInfo('sd58')
+    .then(console.log)
+    .catch(console.error)

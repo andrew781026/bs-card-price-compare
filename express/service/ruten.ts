@@ -69,6 +69,8 @@ const getCardInfoBySingle = async (cardInfo: CardInfo): Promise<CardInfo> => {
 
     const goodsId = cardInfo.buy_link.match(/(https:\/\/)(.*\?)(\d*)/)[3]
     const config = getConfig(null, null, goodsId)
+
+    // API 取資料範例 : https://rapi.ruten.com.tw/api/items/v2/list?gno=22141517817245&level=simple [ gno = 商品編號 ]
     const res = await limiter.schedule(() => axios.get('https://rapi.ruten.com.tw/api/items/v2/list', config))
     const {num, images} = res.data.data[0];
 
