@@ -39,7 +39,7 @@ services:
     image: redis:6.2.6
     container_name: bs-compare-redis
     ports:
-      - '6379:6379'
+      - '16379:6379'
   rabbitmq:
     restart: always
     image: rabbitmq:management
