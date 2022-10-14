@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity:
+    storage: 4Gi
+  volumeMode: Filesystem # Block . Filesystem
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce  # 一個 volume 只能被一個 Node 使用
+    # - ReadOnlyMany   # 一個 volume 可被多個 Pod 使用 , 只能讀取
+    # - ReadWriteMany  # 一個 volume 可被多個 Pod 使用 , 只能在同一個 Node 中
+  hostPath:
+    path: /d/test/udemy/k8s-volumn
+    type: DirectoryOrCreate

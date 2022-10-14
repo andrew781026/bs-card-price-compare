@@ -1,0 +1,11 @@
+POST http://localhost:8018/story
+Content-Type: application/json
+
+{"text": "很好~~"}
+
+###
+
+GET http://localhost:8018/story
+Accept: text/html
+
+###

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: story-service
+spec:
+  selector:
+    app: story-app
+  ports:
+    - protocol: TCP
+      port: 8018       # outer port
+      targetPort: 3000 # container port
+  type: LoadBalancer # ClusterIP . NodePort . LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: story-app
+  template:
+    metadata:
+      labels:
+        app: story-app
+    spec:
+      containers:
+        - name: story-node
+          # image: andrew7810262000/kub-story-app
+          image: "andrew7810262000/kub-story-app:2"
+          env:
+            - name: STORY_FOLDER
+              value: 'story'
+          volumeMounts:
+            # - mountPath: /app/story
+            #   name: story-volumes
+            - mountPath: /app/story
+              name: my-story-volumes
+      volumes:
+        # - name: story-volumes
+        #   emptyDir: {}
+        - name: my-story-volumes
+          hostPath:
+            path: /d/test/udemy/k8s-volumn
+            type: DirectoryOrCreate

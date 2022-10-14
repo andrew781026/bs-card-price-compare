@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-frontend-service
+spec:
+  selector:
+    frontend: network-frontend
+  ports:
+    - protocol: TCP
+      port: 80         # outer port
+      targetPort: 80   # container port
+  type: LoadBalancer   # ClusterIP . NodePort . LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      frontend: network-frontend
+  template:
+    metadata:
+      labels:
+        frontend: network-frontend
+    spec:
+      containers:
+        - name: network-frontend
+          image: andrew7810262000/network-frontend
+          env:
+            - name: TASKS_API_URL
+              value: 'network-task-service.default:8000'  # get ClusterIP with service with same name

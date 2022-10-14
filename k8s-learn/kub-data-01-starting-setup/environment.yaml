@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: story-config
+data:
+  folder: 'story'
+  # key: value...

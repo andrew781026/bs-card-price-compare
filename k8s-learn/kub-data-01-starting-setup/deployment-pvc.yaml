@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: story-service
+spec:
+  selector:
+    app: story-app
+  ports:
+    - protocol: TCP
+      port: 8018       # outer port
+      targetPort: 3000 # container port
+  type: LoadBalancer # ClusterIP . NodePort . LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: story-app
+  template:
+    metadata:
+      labels:
+        app: story-app
+    spec:
+      containers:
+        - name: story-node
+          image: andrew7810262000/kub-story-app
+          env:
+            - name: STORY_FOLDER
+              valueFrom:
+                configMapKeyRef:
+                  name: story-config
+                  key: folder
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-volumes-pvc
+      volumes:
+        - name: story-volumes-pvc
+          persistentVolumeClaim:
+            claimName: host-pvc

@@ -1,0 +1,31 @@
+POST http://localhost:18080/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "testers"
+}
+
+###
+
+POST http://localhost:8000/tasks
+Content-Type: application/json
+Authorization: Bearer abc
+
+{
+  "text": "A second task",
+  "title": "Do this,too !"
+}
+
+###
+
+GET http://localhost:8000/tasks
+Content-Type: application/json
+Authorization: Bearer abc
+
+{
+  "text": "A second task",
+  "title": "Do this,too !"
+}
+
+###

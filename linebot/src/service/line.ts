@@ -170,8 +170,6 @@ export const msgHandler = async event => {
         }
     }
 
-    // const message = getMulti(cardInfo);
-
     const messages = [
         {"type": "text", "text": '遊々亭 - 卡價'},
         getMulti(yuyuteiCardInfo),

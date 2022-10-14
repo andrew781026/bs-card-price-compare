@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-users-service
+spec:
+  selector:
+    users: network-users
+  ports:
+    - protocol: TCP
+      port: 18080      # outer port
+      targetPort: 8080 # container port
+  type: LoadBalancer   # ClusterIP . NodePort . LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      users: network-users
+  template:
+    metadata:
+      labels:
+        users: network-users
+    spec:
+      containers:
+        - name: network-users
+          image: andrew7810262000/network-users
+          env:
+            - name: AUTH_ADDRESS
+              value: 'localhost'
+        - name: network-auth
+          image: andrew7810262000/network-auth
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-task-service
+spec:
+  selector:
+    tasks: network-tasks
+  ports:
+    - port: 8000       # outer port
+      targetPort: 8000 # container port
+  type: LoadBalancer   # ClusterIP . NodePort . LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tasks: network-tasks
+  template:
+    metadata:
+      labels:
+        tasks: network-tasks
+    spec:
+      containers:
+        - name: network-tasks
+          image: andrew7810262000/network-tasks
+          env:
+            - name: AUTH_ADDRESS
+              value: 'network-auth-service.default'  # get ClusterIP with service with same name
+            - name: TASKS_FOLDER
+              value: 'tasks'
+          volumeMounts:
+            - mountPath: /app/tasks
+              name: network-tasks-volumes
+      volumes:
+        - name: network-tasks-volumes
+          hostPath:
+            path: /home/andrew/tasks
+            type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-auth-service
+spec:
+  selector:
+    auth: network-auth
+  ports:
+    - protocol: TCP
+      port: 80       # outer port
+      targetPort: 80 # container port
+  type: ClusterIP    # ClusterIP . NodePort . LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      auth: network-auth
+  template:
+    metadata:
+      labels:
+        auth: network-auth
+    spec:
+      containers:
+        - name: network-auth
+          image: andrew7810262000/network-auth
