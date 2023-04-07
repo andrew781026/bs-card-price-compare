@@ -1,13 +1,18 @@
 ### WARNING: This file is generated from template, edit the file under build-resources/template ###
 
-FROM node:10
+FROM node:14-alpine
 
 # Create app directory
 WORKDIR /home/node
 
-# Start the app
-CMD npm install && npm start
+COPY package.json .
 
-LABEL name=ezoom-linebot-api
-LABEL group=ezoom
+RUN npm install
+
+COPY . .
+
+CMD [ "node", "auth-app.js" ]
+
+LABEL name=bs-linebot
+LABEL group=andrew
 LABEL version=0.0.1

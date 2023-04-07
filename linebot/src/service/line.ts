@@ -12,19 +12,29 @@ import {db} from "../firebase/init";
 import * as YuyuteiService from "./yuyutei";
 import * as FullaheadService from "./fullahead";
 
+// import types
+import {MessageEvent, TextEventMessage, TextMessage} from "@line/bot-sdk/lib/types";
+
 const channelAccessToken = process.env.LineChannelAccessToken;
 const channelSecret = process.env.LineChannelSecret;
 
 // create LINE SDK client
 const client = new line.Client({channelAccessToken, channelSecret});
 
-export const msgHandler = async event => {
+export const msgHandler = async (event: MessageEvent) => {
 
     // firesql - https://firebaseopensource.com/projects/jsayol/firesql/ 也許不錯使用
     const userId = event.source.userId;
     const docRef = db.collection('events').doc(`${userId}-${event.timestamp}`);
 
     docRef.set(event).then(console.log).catch(console.error);
+
+    // type checker
+    function isTextEventMessage(obj: any): obj is TextEventMessage {
+        return (obj !== null) && (typeof obj === "object") && ("type" in obj) && (obj.type === "text") && ("text" in obj) && (typeof obj.text === "string")
+    }
+
+    if (!isTextEventMessage(event.message)) return null;
 
     // event.source.userId - 建立同一個人 , 以前查過的一些列表 => 用 "歷史" 來叫出來
     if (event.message.text === '歷史') {
@@ -158,9 +168,10 @@ export const msgHandler = async event => {
         }
     }
 
-    const getMulti = (cardInfo): FlexMessage => {
+    const getMulti = (cardInfo): FlexMessage | TextMessage => {
 
-        return {
+        if (cardInfo.length === 0) return {"type": "text", "text": '查無資料'} as TextMessage;
+        else return {
             "type": "flex",
             "altText": "查出的卡片資訊",
             "contents": {
@@ -171,13 +182,14 @@ export const msgHandler = async event => {
     }
 
     const messages = [
-        {"type": "text", "text": '遊々亭 - 卡價'},
+        {"type": "text", "text": '遊々亭 - 卡價'} as TextMessage,
         getMulti(yuyuteiCardInfo),
-        {"type": "text", "text": 'フルアヘッド - 卡價',},
+        {"type": "text", "text": 'フルアヘッド - 卡價'} as TextMessage,
         getMulti(fullaheadCardInfo),
     ]
 
-    // @ts-ignore
+    console.log('messages=', messages);
+
     return client.replyMessage(event.replyToken, messages);
 }
 

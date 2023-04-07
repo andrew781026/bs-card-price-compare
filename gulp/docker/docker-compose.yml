@@ -19,16 +19,14 @@ services:
     restart: always
     image: "bs-compare-api"
     container_name: bs-compare-api
-    volumes:
-      # 使用 //d/ 來代表 D槽
-      - "//d/test/docker-data/bs-compare/setup/api:/home/node"
     build:
-      context: .
-      dockerfile: Dockerfile-node
+      # context: dockerfile 內部只能訪問 context 資料夾內的檔案，因此需要拉到有 dockerfile & 原始碼的資料夾
+      context: ../../
+      dockerfile: gulp/docker/api.dockerfile
     environment:
       - TZ=Asia/Taipei
     ports:
-      - "3013:3003"
+      - "5013:80"
     # start this service after depends_on services started
     depends_on:
       - db
