@@ -94,7 +94,7 @@ export const msgHandler = async (event: MessageEvent) => {
     }
 
     const searchText = event.message.text;
-    const yuyuteiCardInfo = await YuyuteiService.getCardInfo(searchText);
+    const yuyuteiCardInfo = await YuyuteiService.getBsCardInfo(searchText);
     const fullaheadCardInfo = await FullaheadService.getCardInfo(searchText);
     saveSearchText({userId, searchText});
 
