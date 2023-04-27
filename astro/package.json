@@ -1,0 +1,15 @@
+{
+  "name": "astro-first-look",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "node_modules/.bin/astro dev --port 3020",
+    "start": "node_modules/.bin/astro dev",
+    "build": "node_modules/.bin/astro build",
+    "preview": "node_modules/.bin/astro preview",
+    "astro": "node_modules/.bin/astro"
+  },
+  "dependencies": {
+    "astro": "^2.3.2"
+  }
+}
